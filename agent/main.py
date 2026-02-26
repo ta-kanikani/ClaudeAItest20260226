@@ -19,15 +19,16 @@ def main(theme: str) -> None:
 
     print(f"[Agent] テーマ「{theme}」の記事作成を開始します")
 
-    # Step 1: Webリサーチ
+    # Step 1: Webリサーチ（クエリ自動生成→検索→要約）
     researcher = Researcher()
-    research_results = researcher.search(theme)
-    print(f"[Agent] リサーチ完了: {len(research_results)} 件の情報を取得")
+    research = researcher.research(theme)
+    print(f"[Agent] リサーチ完了: {len(research['sources'])} 件のソースを取得")
+    print(f"[Agent] 重要ポイント: {len(research['key_points'])} 項目")
 
     # Step 2: 記事執筆
     writer = Writer(system_prompt=PERSONA_SYSTEM_PROMPT)
-    article = writer.write(theme=theme, research=research_results)
-    print("[Agent] 記事執筆完了")
+    article = writer.write(theme=theme, research=research)
+    print(f"[Agent] 記事執筆完了: {article.word_count} 字")
 
     # Step 3: WordPress入稿
     cms = CMSClient()
